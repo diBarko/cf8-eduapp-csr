@@ -24,8 +24,8 @@ public class Teacher extends AbstractEntity {
     @ColumnDefault("true")
     private Boolean isActive;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @OneToOne(cascade = CascadeType.ALL)// , orphanRemoval = true)   either this or nullable false bellow @JoinColumns
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
