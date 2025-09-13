@@ -7,8 +7,8 @@ public record TeacherInsertDTO(
         Boolean isActive,
 
         @NotNull(message = "User details are required")
-        UserInsertDTO user,
+        UserInsertDTO userInsertDTO,
 
         @NotNull(message = "Personal Info is required")
-        PersonalInfoInsertDTO personalInfo
+        PersonalInfoInsertDTO personalInfoInsertDTO
 ) {}
