@@ -15,25 +15,25 @@ public class  Mapper {
     private final PasswordEncoder passwordEncoder;
 
     public TeacherReadOnlyDTO mapToTeacherReadOnlyDTO(Teacher teacher) {
-        TeacherReadOnlyDTO dto = new TeacherReadOnlyDTO();
-        dto.setId(teacher.getId());
-        dto.setUuid(teacher.getUuid());
-        dto.setIsActive(teacher.getIsActive());
+        TeacherReadOnlyDTO teacherReadOnlyDTO = new TeacherReadOnlyDTO();
+        teacherReadOnlyDTO.setId(teacher.getId());
+        teacherReadOnlyDTO.setUuid(teacher.getUuid());
+        teacherReadOnlyDTO.setIsActive(teacher.getIsActive());
 
         // Map User to UserReadOnlyDTO
         UserReadOnlyDTO userDTO = new UserReadOnlyDTO();
         userDTO.setFirstname(teacher.getUser().getFirstname());
         userDTO.setLastname(teacher.getUser().getLastname());
         userDTO.setVat(teacher.getUser().getVat());
-        dto.setUserReadOnlyDTO(userDTO);
+        teacherReadOnlyDTO.setUserReadOnlyDTO(userDTO);
 
         // Map PersonalInfo to PersonalInfoReadOnlyDTO
         PersonalInfoReadOnlyDTO personalInfoDTO = new PersonalInfoReadOnlyDTO();
         personalInfoDTO.setAmka(teacher.getPersonalInfo().getAmka());
         personalInfoDTO.setIdentityNumber(teacher.getPersonalInfo().getIdentityNumber());
-        dto.setPersonalInfoReadOnlyDTO(personalInfoDTO);
+        teacherReadOnlyDTO.setPersonalInfoReadOnlyDTO(personalInfoDTO);
 
-        return dto;
+        return teacherReadOnlyDTO;
     }
 
 
