@@ -1,6 +1,9 @@
 HELP.md
 .gradle
 build/
+.idea/
+gradle/
+/jpa-cascadeType.html
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
