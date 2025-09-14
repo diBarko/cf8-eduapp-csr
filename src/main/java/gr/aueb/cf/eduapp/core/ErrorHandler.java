@@ -109,7 +109,4 @@ public class ErrorHandler  extends ResponseEntityExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)        // HttpCode 403
                 .body(new ResponseMessageDTO(errorCode, ae.getMessage()));
     }
-
-
-
 }
