@@ -15,6 +15,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -69,13 +72,18 @@ public class TeacherService implements ITeacherService{
 
     @Override
     public Page<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size) {
-        return null;
+        String defaultSort = "id";
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(defaultSort).ascending());
+        log.debug("Paginated teachers were returned successfully with page={} and size={}", page, size);
+
+        return teacherRepository.findAll(pageable).map(mapper::mapToTeacherReadOnlyDTO);
     }
 
     private void saveAmkaFile(PersonalInfo personalInfo, MultipartFile amkaFile) throws IOException {
 
         String originalFileName = amkaFile.getOriginalFilename();
-        String savedName = UUID.randomUUID().toString() + getFileExtension(originalFileName);
+        String savedName = UUID.randomUUID()/*.toString()*/ + getFileExtension(originalFileName);   // uuid is automatically converted to String due to concat.
 
         String uploadDirectory = "uploads/";
         Path filePath = Paths.get(uploadDirectory + savedName);
