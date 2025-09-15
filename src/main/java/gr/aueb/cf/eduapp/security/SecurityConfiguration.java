@@ -33,52 +33,55 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfiguration {
-//    private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         http
-            .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(req -> req
-                .requestMatchers(HttpMethod.POST, "/api/teachers").permitAll()           // register   (insert) teacher
-                .requestMatchers("/api/auth/authenticate").permitAll()
-                .requestMatchers("/api/teachers/**").hasAnyAuthority(Role.TEACHER.name(), Role.SUPER_ADMIN.name())
-                .requestMatchers("/api/employees/**").hasAuthority(Role.EMPLOYEE.name())
-                .requestMatchers("/**").authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .exceptionHandling((exceptions) -> exceptions
-                .authenticationEntryPoint(myCustomAuthenticationEntryPoint())
-                .accessDeniedHandler(myCustomAccessDeniedHandler()));
+                .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(req -> req
+                        // PUBLIC ENDPOINTS (must come first)
+                        .requestMatchers("/api/auth/authenticate").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/teachers").permitAll()
+                        .requestMatchers("/api/debug/**").permitAll()
+
+                        // PROTECTED ENDPOINTS (specific to general)
+                        .requestMatchers("/api/teachers/**").hasAnyAuthority(Role.TEACHER.name(), Role.SUPER_ADMIN.name())
+                        .requestMatchers("/api/employees/**").hasAuthority(Role.EMPLOYEE.name())
+
+                        // GENERAL RULE (must come LAST)
+                        .requestMatchers("/**").authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .authenticationProvider(authenticationProvider)
+                //.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // Keep commented for now
+                .exceptionHandling((exceptions) -> exceptions
+                        .authenticationEntryPoint(myCustomAuthenticationEntryPoint())
+                        .accessDeniedHandler(myCustomAccessDeniedHandler()));
 
         return http.build();
     }
 
-    // todo
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("https://coding-factory.apps.gov.gr", "https://test-coding-factory.apps.gov.gr" , "http://localhost:3000",  "http://localhost:4200", "http://localhost:5173", "http://localhost"));
         configuration.setAllowedOrigins(List.of("http://localhost:*", "https://localhost:*", "http://127.0.0.1:*", "https://127.0.0.1:*"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);        // to allow Authorization header, otherwise browser blocks the Authorization header
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
-@Bean
-public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService,
-                                                     PasswordEncoder passwordEncoder) {
-    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-    authProvider.setPasswordEncoder(passwordEncoder);
-    return authProvider;
-}
+    @Bean
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService,
+                                                         PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -90,21 +93,11 @@ public AuthenticationProvider authenticationProvider(UserDetailsService userDeta
         return new BCryptPasswordEncoder(12);
     }
 
-    // custom handlers for Spring Security's unauthorized (401) and forbidden (403) responses.
-
-    // AccessDeniedHandler (Handles 403 Forbidden)
-    // triggered when an authenticated user tries to access a resource they don’t have permissions for.
-    // returns HTTP 403 Forbidden with a basic error page.
-    // want to return a consistent JSON response (common in REST APIs):
     @Bean
     public AccessDeniedHandler myCustomAccessDeniedHandler() {
         return new CustomAccessDeniedHandler();
     }
 
-    // AuthenticationEntryPoint (Handles 401 Unauthorized)
-    // Triggered when an unauthenticated user tries to access a secured resource.
-    // Default behavior: Redirects to login page (for web apps) or returns HTTP 401 (for APIs).
-    // want retrn to a structured JSON response for APIs:
     @Bean
     public AuthenticationEntryPoint myCustomAuthenticationEntryPoint() {
         return new CustomAuthenticationEntryPoint();
