@@ -1,6 +1,5 @@
 package gr.aueb.cf.eduapp.security;
 
-
 import gr.aueb.cf.eduapp.authentication.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -33,6 +32,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+//        // ADDED: Skip JWT processing for multipart requests to prevent 415 errors
+//        String contentType = request.getContentType();
+//        if (contentType != null && contentType.toLowerCase().startsWith("multipart/")) {
+//            log.debug("Skipping JWT filter for multipart request: {}", request.getServletPath());
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
@@ -72,4 +79,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+    // ADDED: Optional - shouldNotFilter method for additional control
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        String path = request.getServletPath();
+//        String method = request.getMethod();
+//
+//        // Skip JWT filter for authentication endpoint
+//        boolean isAuthEndpoint = "/api/auth/authenticate".equals(path);
+//
+//        if (isAuthEndpoint) {
+//            log.debug("Skipping JWT filter for authentication endpoint");
+//            return true;
+//        }
+//
+//        return false;
+//    }
 }
