@@ -32,26 +32,16 @@ public class TeacherRestController {
     private final ITeacherService teacherService;
     private static final Logger logger = LoggerFactory.getLogger(TeacherRestController.class);
 
-//    @PostMapping(value = "/teachers")
-
 @PostMapping(value = "/teachers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 public ResponseEntity<TeacherReadOnlyDTO> saveTeacher(
-        @Valid @RequestPart(name = "teacher") TeacherInsertDTO teacherInsertDTO,
+        @Valid @RequestPart("teacher") TeacherInsertDTO teacherInsertDTO,
         BindingResult bindingResult,
         @Nullable @RequestPart(value = "amkaFile", required = false) MultipartFile amkaFile)
         throws AppObjectAlreadyExists, AppObjectInvalidArgumentException, IOException, ValidationException {
-    logger.info("saveTeacher method called");
-    logger.debug("Received file: {} - {} - {} bytes",
-            amkaFile != null ? amkaFile.getOriginalFilename() : "null",
-            amkaFile != null ? amkaFile.getContentType() : "null",
-            amkaFile != null ? amkaFile.getSize() : 0);
 
-    if (amkaFile != null) {
-        logger.info("File received: {}", amkaFile.getOriginalFilename());
-    } else {
-        logger.info("No file received");
+    if (bindingResult.hasErrors()) {
+        throw new ValidationException(bindingResult);
     }
-
 
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult);
@@ -78,6 +68,7 @@ public ResponseEntity<TeacherReadOnlyDTO> saveTeacher(
        return ResponseEntity.ok(teachersPage);
     }
 
+    @PostMapping("/teachers/search")
     public ResponseEntity<Paginated<TeacherReadOnlyDTO>> getFilteredAndPaginatedTeachers(
             @Nullable @RequestBody TeacherFilters filters) {
         if (filters == null) filters = TeacherFilters.builder().build();        // create empty filter to avoid null
