@@ -11,6 +11,7 @@ import gr.aueb.cf.eduapp.service.ITeacherService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
@@ -28,9 +29,10 @@ public class TeacherRestController {
 
     private final ITeacherService teacherService;
 
-    @PostMapping(value = "/teachers")
+//    @PostMapping(value = "/teachers")
+    @PostMapping(value = "/teachers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TeacherReadOnlyDTO> saveTeacher(
-            BindingResult bindingResult, @Valid @RequestPart(name = "teacher")TeacherInsertDTO teacherInsertDTO,
+            @Valid @RequestPart(name = "teacher")TeacherInsertDTO teacherInsertDTO,BindingResult bindingResult,
             @Nullable @RequestPart(value = "amkaFile", required = false)MultipartFile amkaFile)
             throws AppObjectAlreadyExists, AppObjectInvalidArgumentException, IOException, ValidationException {
         if (bindingResult.hasErrors()) {
