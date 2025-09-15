@@ -42,10 +42,9 @@ public class SecurityConfiguration {
             .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(req -> req
-//                .requestMatchers(HttpMethod.POST, "/api/teachers").permitAll()           // register   (insert) teacher
-                .requestMatchers(HttpMethod.POST, "/api/teachers").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/teachers").permitAll()           // register   (insert) teacher
                 .requestMatchers("/api/auth/authenticate").permitAll()
-//                .requestMatchers("/api/teachers/**").hasAnyAuthority(Role.TEACHER.name(), Role.SUPER_ADMIN.name())
+                .requestMatchers("/api/teachers/**").hasAnyAuthority(Role.TEACHER.name(), Role.SUPER_ADMIN.name())
                 .requestMatchers("/api/employees/**").hasAuthority(Role.EMPLOYEE.name())
                 .requestMatchers("/**").authenticated()
             )
