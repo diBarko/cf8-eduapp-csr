@@ -3,6 +3,7 @@ package gr.aueb.cf.eduapp.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -41,10 +42,11 @@ public class SecurityConfiguration {
             .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(req -> req
-                .requestMatchers("/api/teachers").permitAll()           // register   (insert) teacher
+//                .requestMatchers(HttpMethod.POST, "/api/teachers").permitAll()           // register   (insert) teacher
+                .requestMatchers(HttpMethod.POST, "/api/teachers").permitAll()
                 .requestMatchers("/api/auth/authenticate").permitAll()
-                .requestMatchers("/api/teachers/**").hasAnyAuthority(Role.TEACHER.name(), Role.SUPER_ADMIN.name())
-                .requestMatchers("/api/employess/**").hasAuthority(Role.EMPLOYEE.name())
+//                .requestMatchers("/api/teachers/**").hasAnyAuthority(Role.TEACHER.name(), Role.SUPER_ADMIN.name())
+                .requestMatchers("/api/employees/**").hasAuthority(Role.EMPLOYEE.name())
                 .requestMatchers("/**").authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
@@ -61,7 +63,8 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://coding-factory.apps.gov.gr", "https://test-coding-factory.apps.gov.gr" , "http://localhost:3000",  "http://localhost:4200", "http://localhost:5173"));
+//        configuration.setAllowedOrigins(List.of("https://coding-factory.apps.gov.gr", "https://test-coding-factory.apps.gov.gr" , "http://localhost:3000",  "http://localhost:4200", "http://localhost:5173", "http://localhost"));
+        configuration.setAllowedOrigins(List.of("http://localhost:*", "https://localhost:*", "http://127.0.0.1:*", "https://127.0.0.1:*"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);        // to allow Authorization header, otherwise browser blocks the Authorization header
