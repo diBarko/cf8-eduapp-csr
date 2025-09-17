@@ -85,7 +85,8 @@ public class ErrorHandler  extends ResponseEntityExceptionHandler {
                 .body(new ResponseMessageDTO("FILE_UPLOAD_FAILED ", ioe.getMessage()));
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    // Move to authentication entry point, requests with these errors will never reach controllers.
+    /*@ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ResponseMessageDTO> handleBadCredentialsException (BadCredentialsException bce, HttpServletRequest request) {
         log.warn("Login attempt failed for IP={}",request.getRemoteAddr());
         return ResponseEntity
@@ -108,5 +109,5 @@ public class ErrorHandler  extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)        // HttpCode 403
                 .body(new ResponseMessageDTO(errorCode, ae.getMessage()));
-    }
+    }*/
 }
