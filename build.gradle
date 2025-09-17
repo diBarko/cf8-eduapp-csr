@@ -15,35 +15,70 @@ java {
 	}
 }
 
+bootJar {
+    archiveFileName = "eduapp.jar"  // Forces output JAR name
+}
+
+configurations {    // these configurations are for lombok, and can be define like in line 40 [compileOnly 'org.projectlombok:lombok']
+    compileOnly {   // since defined here, line 40 is redundant
+        extendsFrom annotationProcessor
+    }
+    testCompileOnly { // since defined here, line 42 is redundant
+        extendsFrom testAnnotationProcessor
+    }
+}
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Provides: controllers' functionality, jakarta servlets, embedded tomcat, Slf4j, jackson (de-serialization
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Provides repositories
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compileOnly 'org.projectlombok:lombok'
+    // Provies in-memory DB for Repository tests - tests only without using DB, can be used as regular DB tho
+    runtimeOnly 'com.h2database:h2'
+
+    // Provides test frameworks for testing, JUnit (v5 jUnit is renamed to jupiter), AssertJ (uses junit's engine
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Provides mysql jdbc driver - intermediate component, translates java to mysql and reversed
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+//    testCompileOnly 'org.projectlombok:1.18.30'
+
+    // lombok security for authentication and authorization
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    // bean hibernate validations, jpa annotations (@NotNull, @RegExp etc)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // JWT (JSON Web Token) De-Serialization done by Jackson
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-
+    // Integration with jackson
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    //  part of junit's engine runtime
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Testing data
+    testImplementation 'net.datafaker:datafaker:2.3.1'
+
+    // ex Swagger now openapi - provides UI documentation for endpoints requests-responses data-forms
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.18.0' //2.8.9'
+
+    // Version Control Management for databases migrations and more
+//    implementation 'org.flywaydb:flyway-core'
 
     implementation 'mysql:mysql-connector-java:8.0.33'
 
-    // Add these two dependencies for multipart file handling
-//    implementation 'commons-fileupload:commons-fileupload:1.5'
-//    implementation 'commons-io:commons-io:2.15.1'
-
 
 }
-
-tasks.named('test') {
-	useJUnitPlatform()
+// e.g.   -     ./gradlew test
+tasks.named('test', Test) {	// Gradle Test class implements 'test' task, it is default if missed
+    useJUnitPlatform()					// Configures the test task to use JUnit 5 engine to run the tests
+    finalizedBy(jacocoTestReport)		// after 'test' task, jacoco will run και αυτόματο report μετά test
 }
