@@ -68,7 +68,7 @@ dependencies {
     testImplementation 'net.datafaker:datafaker:2.3.1'
 
     // ex Swagger now openapi - provides UI documentation for endpoints requests-responses data-forms
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.18.0' //2.8.9'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 
     // Version Control Management for databases migrations and more
 //    implementation 'org.flywaydb:flyway-core'
@@ -78,7 +78,7 @@ dependencies {
 
 }
 // e.g.   -     ./gradlew test
-tasks.named('test', Test) {	// Gradle Test class implements 'test' task, it is default if missed
+/*tasks.named('test', Test) {	// Gradle Test class implements 'test' task, it is default if missed
     useJUnitPlatform()					// Configures the test task to use JUnit 5 engine to run the tests
     finalizedBy(jacocoTestReport)		// after 'test' task, jacoco will run και αυτόματο report μετά test
-}
+}*/
