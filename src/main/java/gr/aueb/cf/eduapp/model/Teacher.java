@@ -24,6 +24,7 @@ public class Teacher extends AbstractEntity {
     @ColumnDefault("true")
     private Boolean isActive;
 
+    // CascadeType.ALL  -> when we persist teacher this filed will as well be persisted. (del/save teacher, del/save user and personal info as well).
     @OneToOne(cascade = CascadeType.ALL)// , orphanRemoval = true)   either this or nullable false bellow @JoinColumns
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
