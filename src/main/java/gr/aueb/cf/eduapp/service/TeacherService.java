@@ -2,6 +2,7 @@ package gr.aueb.cf.eduapp.service;
 
 import gr.aueb.cf.eduapp.core.exceptions.AppObjectAlreadyExists;
 import gr.aueb.cf.eduapp.core.exceptions.AppObjectInvalidArgumentException;
+import gr.aueb.cf.eduapp.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.eduapp.core.filters.Paginated;
 import gr.aueb.cf.eduapp.core.filters.TeacherFilters;
 import gr.aueb.cf.eduapp.core.specifications.TeacherSpecification;
@@ -17,7 +18,6 @@ import gr.aueb.cf.eduapp.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -75,13 +75,24 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public Page<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size) {
-        String defaultSort = "id";
+    public TeacherReadOnlyDTO getOneTeacher(String uuid) throws AppObjectNotFoundException {
+        return teacherRepository
+                .findByUuid(uuid)
+//                .map(content -> mapper.mapToTeacherReadOnlyDTO(content))    // lambda to method reference due to 1 argument
+                .map(mapper::mapToTeacherReadOnlyDTO)
+                .orElseThrow(() ->
+                new AppObjectNotFoundException("Teacher", "Teacher with uuid: " + uuid + " was not found."));
+    }
 
+    @Override
+//    public Page<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size) {
+    public Paginated<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size) {
+        String defaultSort = "id";
         Pageable pageable = PageRequest.of(page, size, Sort.by(defaultSort).ascending());
         log.debug("Paginated teachers were returned successfully with page={} and size={}", page, size);
-
-        return teacherRepository.findAll(pageable).map(mapper::mapToTeacherReadOnlyDTO);
+//        return teacherRepository.findAll(pageable).map(mapper::mapToTeacherReadOnlyDTO);
+        var paginatedTeachers = teacherRepository.findAll(pageable);
+        return Paginated.fromPage(paginatedTeachers.map(mapper::mapToTeacherReadOnlyDTO));
     }
 
     @Override
