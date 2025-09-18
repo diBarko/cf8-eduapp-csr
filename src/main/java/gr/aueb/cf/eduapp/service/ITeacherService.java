@@ -2,6 +2,7 @@ package gr.aueb.cf.eduapp.service;
 
 import gr.aueb.cf.eduapp.core.exceptions.AppObjectAlreadyExists;
 import gr.aueb.cf.eduapp.core.exceptions.AppObjectInvalidArgumentException;
+import gr.aueb.cf.eduapp.core.exceptions.AppObjectNotFoundException;
 import gr.aueb.cf.eduapp.core.filters.Paginated;
 import gr.aueb.cf.eduapp.core.filters.TeacherFilters;
 import gr.aueb.cf.eduapp.dto.TeacherInsertDTO;
@@ -15,6 +16,8 @@ public interface ITeacherService {
 
     TeacherReadOnlyDTO saveTeacher(TeacherInsertDTO teacherInsertDTO, MultipartFile amkaFile)
             throws AppObjectAlreadyExists, AppObjectInvalidArgumentException, IOException;
+
+    TeacherReadOnlyDTO getOneTeacher(String uuid) throws AppObjectNotFoundException;
 
     Page<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size);
 
