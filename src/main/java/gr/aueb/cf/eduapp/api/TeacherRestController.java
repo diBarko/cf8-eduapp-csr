@@ -61,12 +61,20 @@ public ResponseEntity<TeacherReadOnlyDTO> saveTeacher(
     }
 
     @GetMapping("/teachers")
+    public ResponseEntity<Paginated<TeacherReadOnlyDTO>> getPaginatedTeachers(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size
+    ) {
+//        Page<TeacherReadOnlyDTO> teachersPage = teacherService.getPaginatedTeachers(page, size);
+        Paginated<TeacherReadOnlyDTO> teachersPage = teacherService.getPaginatedTeachers(page, size);
+        return ResponseEntity.ok(teachersPage);
+    }
+    /*@GetMapping("/teachers")
     public ResponseEntity<Page<TeacherReadOnlyDTO>> getPaginatedTeachers(
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size
     ) {
        Page<TeacherReadOnlyDTO> teachersPage = teacherService.getPaginatedTeachers(page, size);
        return ResponseEntity.ok(teachersPage);
-    }
+    }*/
 
     @PostMapping("/teachers/search")
     public ResponseEntity<Paginated<TeacherReadOnlyDTO>> getFilteredAndPaginatedTeachers(
