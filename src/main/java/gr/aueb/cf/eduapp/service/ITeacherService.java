@@ -19,7 +19,8 @@ public interface ITeacherService {
 
     TeacherReadOnlyDTO getOneTeacher(String uuid) throws AppObjectNotFoundException;
 
-    Page<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size);
+    Paginated<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size);
+//    Page<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size);
 
     public Paginated<TeacherReadOnlyDTO> getTeachersFilteredPaginated(TeacherFilters teacherFilters);
 }
