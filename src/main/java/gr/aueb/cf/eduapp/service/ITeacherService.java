@@ -22,5 +22,6 @@ public interface ITeacherService {
     Paginated<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size);
 //    Page<TeacherReadOnlyDTO> getPaginatedTeachers(int page, int size);
 
-    public Paginated<TeacherReadOnlyDTO> getTeachersFilteredPaginated(TeacherFilters teacherFilters);
+    Paginated<TeacherReadOnlyDTO> getTeachersFilteredPaginated(TeacherFilters teacherFilters);
+
 }
